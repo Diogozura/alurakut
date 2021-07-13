@@ -5,10 +5,10 @@ const GlobalStyle = createGlobalStyle`
   /* Reset CSS */
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box; 
 
   body {
-    margin:0;
+    margin: 0;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: #D9E6F6;
   }
