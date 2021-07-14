@@ -23,14 +23,38 @@ function PrfileSidebar(propriedades) {
   )
 }
 
+function ProfileRelationsBox(proprriedades) {
+  return (
+    <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">
+        {proprriedades.title}({proprriedades.items.length})
+      </h2>
+      <ul>
+        {/* {seguidores.map((itemAtual) => {
+          return (
+            <li key={itemAtual}>
+              <a href={`https://github.com/${itemAtual}`}>
+                <img src={itemAtual.image} />
+                <span>{itemAtual.title}</span>
+              </a>
+            </li>
+          )
+        })} */}
+      </ul>
+    </ProfileRelationsBoxWrapper>
+  )
+}
+
 export default function Home() {
   const [comunidades, setComunidades] = React.useState([{
-    id:'1164',
-    title:'Ultimante Drift',
-    image:'https://driftbrasil.com.br/wp-content/uploads/2020/05/download-4.png',
-    url: 'https://discord.gg/CwDCKRgW'},
-    {id:'171824',
-    title:'Coisa nossa',
+    id: '1164',
+    title: 'Ultimante Drift',
+    image: 'https://driftbrasil.com.br/wp-content/uploads/2020/05/download-4.png',
+    url: 'https://discord.gg/CwDCKRgW'
+  },
+  {
+    id: '171824',
+    title: 'Coisa nossa',
     image: 'https://yt3.ggpht.com/ytc/AKedOLTEh4JNF1wamGNoZLfCSJQ2A_MMRBv3kuJKgYSt=s900-c-k-c0x00ffffff-no-rj',
     url: 'https://discord.com/invite/nY95yjB2',
   }
@@ -47,9 +71,23 @@ export default function Home() {
 
   ]
 
+  const [seguidores, setSeguidores] = React.useState([])
+  // 0-  Pegar o array de dados do github
+  React.useEffect(function () {
+    fetch('https://api.github.com/users/Diogozura/followers')
+      .then(function (respostaServidor) {
+        return respostaServidor.json()
+      })
+      .then(function (respostaCompleta) {
+        setSeguidores(respostaCompleta)
+      })
+  }, [])
+
+  //1- criar um box que vai ter um map, baseado nos items do array que pegamos do github
+
   return (
     <>
-      <AlurakutMenu githubUser={githubUser}/>
+      <AlurakutMenu githubUser={githubUser} />
       <MainGrid>
         <div className="profileArea" style={{ gridArea: 'profileArea' }}>
           <PrfileSidebar githubUser={githubUser} />
@@ -64,36 +102,36 @@ export default function Home() {
 
           <Box>
             <h2 className="subTitle">O Que você deseja Fazer?</h2>
-            <form onSubmit={function handleCriarComunidade(e){
-                e.preventDefault()
-                const dadosDoForms = new FormData(e.target)
+            <form onSubmit={function handleCriarComunidade(e) {
+              e.preventDefault()
+              const dadosDoForms = new FormData(e.target)
 
-                const comunidade = {
-                  
-                  id: new Date().toISOString(),
-                  title: dadosDoForms.get('title'),
-                  image: dadosDoForms.get('image'),
-                  url: dadosDoForms.get('url'),
-                }
+              const comunidade = {
 
-                const comunidadesAtualizadas = [...comunidades, comunidade]
-                setComunidades(comunidadesAtualizadas)
-                
+                id: new Date().toISOString(),
+                title: dadosDoForms.get('title'),
+                image: dadosDoForms.get('image'),
+                url: dadosDoForms.get('url'),
+              }
+
+              const comunidadesAtualizadas = [...comunidades, comunidade]
+              setComunidades(comunidadesAtualizadas)
+
             }}>
               <div>
                 <input
                   placeholder="Qual vai ser o nome da sua comunidade?"
                   name="title"
-                  aria-label="Qual vai ser o nome da sua comunidade?" 
-                  type="text"/>
+                  aria-label="Qual vai ser o nome da sua comunidade?"
+                  type="text" />
               </div>
               <div>
                 <input
                   placeholder="coloque uma URL para usarmos de capa"
                   name="image"
-                  aria-label="coloque uma URL para usarmos de capa" 
+                  aria-label="coloque uma URL para usarmos de capa"
                   type="text"
-                  />
+                />
               </div>
 
               <button>
@@ -102,13 +140,14 @@ export default function Home() {
             </form>
           </Box>
         </div>
-        <div 
-        className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
+        <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
+
+          <ProfileRelationsBox title="Seguidores" items={seguidores} />
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
               Comunidades({comunidades.length})
             </h2>
-          <ul>
+            <ul>
               {comunidades.map((itemAtual) => {
                 return (
                   <li key={itemAtual.id}>
@@ -119,7 +158,7 @@ export default function Home() {
                   </li>
                 )
               })}
-            </ul> 
+            </ul>
           </ProfileRelationsBoxWrapper>
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
