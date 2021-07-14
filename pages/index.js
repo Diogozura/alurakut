@@ -24,7 +24,17 @@ function PrfileSidebar(propriedades) {
 }
 
 export default function Home() {
-  const [comunidades, setComunidades] = React.useState([])
+  const [comunidades, setComunidades] = React.useState([{
+    id:'1164',
+    title:'Ultimante Drift',
+    image:'https://driftbrasil.com.br/wp-content/uploads/2020/05/download-4.png',
+    url: 'https://discord.gg/CwDCKRgW'},
+    {id:'171824',
+    title:'Coisa nossa',
+    image: 'https://yt3.ggpht.com/ytc/AKedOLTEh4JNF1wamGNoZLfCSJQ2A_MMRBv3kuJKgYSt=s900-c-k-c0x00ffffff-no-rj',
+    url: 'https://discord.com/invite/nY95yjB2',
+  }
+  ])
   const githubUser = 'diogozura'
   // const comunidades = ['alurakut']
   const pessoasFavoritas = [
@@ -58,13 +68,12 @@ export default function Home() {
                 e.preventDefault()
                 const dadosDoForms = new FormData(e.target)
 
-                console.log('Campo: ', dadosDoForms.get('title') )
-                console.log('Campo: ', dadosDoForms.get('image') )
-                
                 const comunidade = {
+                  
                   id: new Date().toISOString(),
                   title: dadosDoForms.get('title'),
                   image: dadosDoForms.get('image'),
+                  url: dadosDoForms.get('url'),
                 }
 
                 const comunidadesAtualizadas = [...comunidades, comunidade]
@@ -103,7 +112,7 @@ export default function Home() {
               {comunidades.map((itemAtual) => {
                 return (
                   <li key={itemAtual.id}>
-                    <a href={`/users/${itemAtual.title}`}>
+                    <a href={itemAtual.url}>
                       <img src={itemAtual.image} />
                       <span>{itemAtual.title}</span>
                     </a>
