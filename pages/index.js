@@ -46,19 +46,7 @@ function ProfileRelationsBox(proprriedades) {
 }
 
 export default function Home() {
-  const [comunidades, setComunidades] = React.useState([{
-    id: '1164',
-    title: 'Ultimante Drift',
-    image: 'https://driftbrasil.com.br/wp-content/uploads/2020/05/download-4.png',
-    url: 'https://discord.gg/CwDCKRgW'
-  },
-  {
-    id: '171824',
-    title: 'Coisa nossa',
-    image: 'https://yt3.ggpht.com/ytc/AKedOLTEh4JNF1wamGNoZLfCSJQ2A_MMRBv3kuJKgYSt=s900-c-k-c0x00ffffff-no-rj',
-    url: 'https://discord.com/invite/nY95yjB2',
-  }
-  ])
+  const [comunidades, setComunidades] = React.useState([])
   const githubUser = 'diogozura'
   // const comunidades = ['alurakut']
   const pessoasFavoritas = [
@@ -74,12 +62,38 @@ export default function Home() {
   const [seguidores, setSeguidores] = React.useState([])
   // 0-  Pegar o array de dados do github
   React.useEffect(function () {
+
+    //GET
     fetch('https://api.github.com/users/Diogozura/followers')
       .then(function (respostaServidor) {
         return respostaServidor.json()
       })
       .then(function (respostaCompleta) {
         setSeguidores(respostaCompleta)
+      })
+
+      //API GraphQL
+      fetch('https://graphql.datocms.com/', {
+        method: 'POST',
+        headers: {
+          'Authorization': '11690aee83d9fd73b460984026a380',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({"query": `query{
+          allCommunities{
+            title
+            id
+            imageUrl
+            url
+          }
+        }`})
+      })
+      .then((response)=> response.json()) // Pega o retorno do response.json() e já retorna
+      .then((respostaCompleta)=>{
+        const comunidadesVindaDoDato = respostaCompleta.data.allCommunities
+        console.log(comunidadesVindaDoDato)
+        setComunidades(comunidadesVindaDoDato)
       })
   }, [])
 
@@ -107,15 +121,27 @@ export default function Home() {
               const dadosDoForms = new FormData(e.target)
 
               const comunidade = {
-
-                id: new Date().toISOString(),
                 title: dadosDoForms.get('title'),
-                image: dadosDoForms.get('image'),
+                imageUrl: dadosDoForms.get('image'),
                 url: dadosDoForms.get('url'),
               }
 
-              const comunidadesAtualizadas = [...comunidades, comunidade]
-              setComunidades(comunidadesAtualizadas)
+              fetch('/api/comunidades',{
+                method: 'POST',
+                headers:{
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(comunidade)
+              })
+              .then(async(response) =>{
+                const dados = response.json()
+                console.log(dados.registroCriado)
+                const comunidades = dados.registroCriado
+                const comunidadesAtualizadas = [...comunidades, comunidade]
+                setComunidades(comunidadesAtualizadas)
+              })
+
+             
 
             }}>
               <div>
@@ -152,7 +178,7 @@ export default function Home() {
                 return (
                   <li key={itemAtual.id}>
                     <a href={itemAtual.url}>
-                      <img src={itemAtual.image} />
+                      <img src={itemAtual.imageUrl} />
                       <span>{itemAtual.title}</span>
                     </a>
                   </li>
